@@ -170,4 +170,4 @@ In order to setup:
    [accounts]
      user: +<USER_PASSWORD_HASH>
    ```
-1. Repeat setups 2-3 every time a new user is added to find their hashed password
+1. Repeat setups 2-4 every time a new user is added to find their hashed password
