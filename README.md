@@ -57,3 +57,69 @@ This is the current plan of how my homelab / home network will be setup.
   - The Raspberry Pi 3 is just running Raspberry Pi OS 3 and is joined to the swarm.
   - Just run the `docker swarm deploy -c` command to deploy / update the services controlled by the swarm.
   - Everything else is deployed manually.
+
+## Swarm Manager
+Every service in the swarm will be managed by this stack configuration file.
+
+In order to join a worker to the swarm, get the join command with:
+  `docker swarm join-token worker`
+
+Ensure the worker is joined to the Tailnet and is tagged with the `swarm-worker` tag.
+
+The swarm is deployed and updated by running:
+  `docker stack deploy -c ./docker-stack.yml homelab`
+
+[`docker-stack.yml`](./docker-stack.yml):
+``` {.yaml file=./docker-stack.yml}
+services:
+  <<services>>
+
+secrets:
+  <<secrets>>
+```
+
+## Pi-hole
+[Pi-hole](https://pi-hole.net/) will act as my DNS server.
+Although I am mainly using it only for its blocklist capabilities, I might use it to play around with some DNS configurations.
+
+`services`:
+``` {.yaml #services}
+pihole:
+  image: pihole/pihole:latest
+  ports:
+    - target: 53
+      published: 53
+      mode: host
+      protocol: tcp
+    - target: 53
+      published: 53
+      mode: host
+      protocol: udp
+    - target: 443
+      published: 443
+      mode: host
+      protocol: tcp
+    - target: 80
+      published: 80
+      mode: host
+      protocol: tcp
+  environment:
+    TZ: "America/Los_Angeles"
+    WEBPASSWORD_FILE: /run/secrets/pihole_web_admin_pass
+    FTLCONF_dns_listenMode: "ALL"
+  volumes:
+    - /srv/pihole:/etc/pihole
+  deploy:
+    replicas: 1
+    placement:
+      constraints:
+        - node.hostname == pihole
+```
+
+I need to use swarm secrets in order to configure my Pi-hole web console password.
+
+`secrets`:
+``` {.yaml #secrets}
+pihole_web_admin_pass:
+  external: true
+```

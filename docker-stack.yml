@@ -1,0 +1,41 @@
+# ~/~ begin <<README.md#./docker-stack.yml>>[init]
+services:
+  # ~/~ begin <<README.md#services>>[init]
+  pihole:
+    image: pihole/pihole:latest
+    ports:
+      - target: 53
+        published: 53
+        mode: host
+        protocol: tcp
+      - target: 53
+        published: 53
+        mode: host
+        protocol: udp
+      - target: 443
+        published: 443
+        mode: host
+        protocol: tcp
+      - target: 80
+        published: 80
+        mode: host
+        protocol: tcp
+    environment:
+      TZ: "America/Los_Angeles"
+      WEBPASSWORD_FILE: /run/secrets/pihole_web_admin_pass
+      FTLCONF_dns_listenMode: "ALL"
+    volumes:
+      - /srv/pihole:/etc/pihole
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == pihole
+  # ~/~ end
+
+secrets:
+  # ~/~ begin <<README.md#secrets>>[init]
+  pihole_web_admin_pass:
+    external: true
+  # ~/~ end
+# ~/~ end
