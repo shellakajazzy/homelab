@@ -1,7 +1,7 @@
 [![Entangled badge](https://img.shields.io/badge/entangled-Use%20the%20source!-%2300aeff)](https://entangled.github.io/)
 
 # Homelab
-The documentation, configuration files, and scripts for my homelab / private network
+The documentation, configuration files, and scripts for my homelab / private network.
 
 ## Architecture
 This is the current plan of how my homelab / home network will be setup.
@@ -171,3 +171,33 @@ In order to setup:
      user: +<USER_PASSWORD_HASH>
    ```
 1. Repeat setups 2-4 every time a new user is added to find their hashed password
+
+## Forgejo
+I am using [Forgejo](https://forgejo.org/) as my main Git forge.
+Like copyparty, I am likely going to share this with some friends.
+
+`services`:
+``` {.yaml #services}
+forgejo:
+  image: codeberg.org/forgejo/forgejo:15
+  ports:
+    - target: 3000
+      published: 3000
+      mode: host
+      protocol: tcp
+    - target: 22
+      published: 22
+      mode: host
+      protocol: tcp
+  environment:
+    USER_PID: 1000
+    USER_GID: 1000
+  volumes:
+    - /srv/forgejo:/data
+    - /etc/localtime:/etc/localtime:ro
+  deploy:
+    replicas: 1
+    placement:
+      constraints:
+        - node.hostname == forgejo
+```

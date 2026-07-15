@@ -51,6 +51,30 @@ services:
         constraints:
           - node.hostname == copyparty
   # ~/~ end
+  # ~/~ begin <<README.md#services>>[2]
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:15
+    ports:
+      - target: 3000
+        published: 3000
+        mode: host
+        protocol: tcp
+      - target: 22
+        published: 22
+        mode: host
+        protocol: tcp
+    environment:
+      USER_PID: 1000
+      USER_GID: 1000
+    volumes:
+      - /srv/forgejo:/data
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == forgejo
+  # ~/~ end
 
 secrets:
   # ~/~ begin <<README.md#secrets>>[init]
