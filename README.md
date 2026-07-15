@@ -123,3 +123,51 @@ I need to use swarm secrets in order to configure my Pi-hole web console passwor
 pihole_web_admin_pass:
   external: true
 ```
+
+## copyparty
+I am running [copyparty](https://github.com/9001/copyparty) as my fileshare.
+I will most likely be sharing this instance through Tailscale so that I can provide some storage for friends.
+
+`services`:
+``` {.yaml #services}
+copyparty:
+  image: copyparty/ac:latest
+  ports:
+    - target: 3923
+      published: 3923
+      mode: host
+      protocol: tcp
+  command: ["-p", "3923", "-e2dsa", "-e2ts", "--usernames", "--ah-alg", "argon2"]
+  volumes:
+    - /srv/copyparty/copyparty.conf:/cfg/config.conf:ro
+    - /srv/copyparty/db:/cfg/hists
+    - /srv/copyparty/media:/media
+  deploy:
+    replicas: 1
+    placement:
+      constraints:
+        - node.hostname == copyparty
+```
+
+In order to setup:
+1. Edit `copyparty.conf`:
+   ```
+   [global]
+     show-ah-salt
+  
+   [accounts]
+     user: password
+   ```
+1. Deploy the stack:
+   `docker stack deploy -c ./docker-stack.yml homelab`
+1. Check the logs:
+   `docker service logs homelab_copyparty`
+1. Edit `copyparty.conf` to match the values in the logs:
+   ```
+   [global]
+     ah-salt: <YOUR_AH_SALT>
+    
+   [accounts]
+     user: +<USER_PASSWORD_HASH>
+   ```
+1. Repeat setups 2-3 every time a new user is added to find their hashed password

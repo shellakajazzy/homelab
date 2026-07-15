@@ -32,6 +32,25 @@ services:
         constraints:
           - node.hostname == pihole
   # ~/~ end
+  # ~/~ begin <<README.md#services>>[1]
+  copyparty:
+    image: copyparty/ac:latest
+    ports:
+      - target: 3923
+        published: 3923
+        mode: host
+        protocol: tcp
+    command: ["-p", "3923", "-e2dsa", "-e2ts", "--usernames", "--ah-alg", "argon2"]
+    volumes:
+      - /srv/copyparty/copyparty.conf:/cfg/config.conf:ro
+      - /srv/copyparty/db:/cfg/hists
+      - /srv/copyparty/media:/media
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == copyparty
+  # ~/~ end
 
 secrets:
   # ~/~ begin <<README.md#secrets>>[init]
