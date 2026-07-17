@@ -75,6 +75,26 @@ services:
         constraints:
           - node.hostname == forgejo
   # ~/~ end
+  # ~/~ begin <<README.md#services>>[3]
+  syncthing:
+    image: syncthing/syncthing:latest
+    ports: 
+      - target: 8384
+        published: 8384
+        mode: host
+        protocol: tcp
+    environment:
+      USER_PID: 1000
+      USER_GID: 1000
+    volumes:
+      - /srv/syncthing/data:/data
+      - /srv/syncthing/synced:/synced
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == syncthing
+  # ~/~ end
 
 secrets:
   # ~/~ begin <<README.md#secrets>>[init]

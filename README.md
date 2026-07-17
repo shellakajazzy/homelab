@@ -201,3 +201,28 @@ forgejo:
       constraints:
         - node.hostname == forgejo
 ```
+
+## Syncthing
+I want to use [Syncthing](https://syncthing.net/) to backup really important files accross multiple backups on all of my end devices.
+
+`services`:
+``` {.yaml #services}
+syncthing:
+  image: syncthing/syncthing:latest
+  ports: 
+    - target: 8384
+      published: 8384
+      mode: host
+      protocol: tcp
+  environment:
+    USER_PID: 1000
+    USER_GID: 1000
+  volumes:
+    - /srv/syncthing/data:/data
+    - /srv/syncthing/synced:/synced
+  deploy:
+    replicas: 1
+    placement:
+      constraints:
+        - node.hostname == syncthing
+```
