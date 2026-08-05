@@ -22,7 +22,6 @@ This is the current plan of how my homelab / home network will be setup.
     - The services running on the RPi3 are ones that I want to ensure are always enabled
     - Pi-hole (DNS Server)
     - Syncthing (File Sync)
-    - Logseq Sync Server
 
 - Network rules:
   - VLAN Network Segments:
@@ -110,10 +109,11 @@ pihole:
   volumes:
     - /srv/pihole:/etc/pihole
   deploy:
-    replicas: 1
+    replicas: 2
     placement:
+      max_replicas_per_node: 1
       constraints:
-        - node.hostname == pihole
+        - node.labels.pihole_host == true
 ```
 
 I need to use swarm secrets in order to configure my Pi-hole web console password.
@@ -218,11 +218,12 @@ syncthing:
     USER_PID: 1000
     USER_GID: 1000
   volumes:
-    - /srv/syncthing/data:/data
+    - /srv/syncthing/data:/var/syncthing
     - /srv/syncthing/synced:/synced
   deploy:
-    replicas: 1
+    replicas: 2
     placement:
+      max_replicas_per_node: 1
       constraints:
-        - node.hostname == syncthing
+        - node.labels.syncthing_host == true
 ```

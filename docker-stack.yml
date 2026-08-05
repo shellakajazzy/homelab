@@ -27,10 +27,11 @@ services:
     volumes:
       - /srv/pihole:/etc/pihole
     deploy:
-      replicas: 1
+      replicas: 2
       placement:
+        max_replicas_per_node: 1
         constraints:
-          - node.hostname == pihole
+          - node.labels.pihole_host == true
   # ~/~ end
   # ~/~ begin <<README.md#services>>[1]
   copyparty:
@@ -87,13 +88,14 @@ services:
       USER_PID: 1000
       USER_GID: 1000
     volumes:
-      - /srv/syncthing/data:/data
+      - /srv/syncthing/data:/var/syncthing
       - /srv/syncthing/synced:/synced
     deploy:
-      replicas: 1
+      replicas: 2
       placement:
+        max_replicas_per_node: 1
         constraints:
-          - node.hostname == syncthing
+          - node.labels.syncthing_host == true
   # ~/~ end
 
 secrets:
