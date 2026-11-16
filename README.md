@@ -68,3 +68,26 @@ Here is a sample copyparty share config
   flags:
     e2ds
 ```
+
+## Syncthing
+
+`compose-services`:
+``` {.yaml #compose-services}
+syncthing:
+    image: syncthing/syncthing
+    container_name: syncthing
+    restart: unless-stopped
+    hostname: homelab-syncthing
+    environment:
+      - "PUID=1000"
+      - "PGID=1000"
+      - "STGUIADDRESS=0.0.0.0:8384"
+    labels:
+        - "docktail.service.enable=true"
+        - "docktail.service.name=syncthing${SERVICE_SUFFIX}"
+        - "docktail.service.port=8384"
+        - "docktail.service.service-port=443"
+    volumes:
+      - "${SYNCTHING_CONFIG}:/var/syncthing/config:z"
+      - "${SYNCTHING_SHARE}:/share:z"
+```
