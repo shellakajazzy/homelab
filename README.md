@@ -82,6 +82,7 @@ syncthing:
       - "PUID=1000"
       - "PGID=1000"
       - "STGUIADDRESS=0.0.0.0:8384"
+      - "STHOMEDIR=/share"
     labels:
         - "docktail.service.enable=true"
         - "docktail.service.name=syncthing${SERVICE_SUFFIX}"
